@@ -16,7 +16,6 @@ class DMPNN(MessagePassing):
         self.W_i = torch.nn.Linear(node_in_channels + edge_in_channels, hidden_channels)
         self.W_m = torch.nn.Linear(hidden_channels, hidden_channels)
         self.W_a = torch.nn.Linear(hidden_channels, hidden_channels)
-
         self.num_layers = num_layers
         self.norm = LayerNorm(hidden_channels)
     def forward(self, x, edge_index, rev_edge_index, edge_attr, batch):
@@ -32,14 +31,11 @@ class DMPNN(MessagePassing):
             h_vw = self.update_hidden_states(h_vw, m_vw)
             h_vw = self.norm(h_vw)
         # Aggregate final messages for nodes
-
         m_v = self.final_message_aggregation(h_vw, edge_index, x.size(0))
 
         # Calculate final hidden states for nodes
         h_v = self.calculate_node_hidden_states(x, m_v)
-
         h_v = self.norm(h_v)
-
         return h_v
 
     def init_edge_hidden_states(self, x, edge_index, edge_attr):
